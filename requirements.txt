@@ -1,0 +1,4 @@
+deepface==0.0.93
+Django==5.0.7
+dlib==19.24.9
+retina_face==0.0.17

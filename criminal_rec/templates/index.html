@@ -1,0 +1,71 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Login - IdentiFind</title>
+</head>
+<body>
+
+<div class="wrapper">
+    <nav class="nav">
+        <div class="nav-logo">
+            <p>IdentiFind</p>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <ul>
+                <li><a href="#" class="link active">Home</a></li>
+                <li><a href="#" class="link">Blog</a></li>
+                <li><a href="#" class="link">Services</a></li>
+                <li><a href="#" class="link">About</a></li>
+            </ul>
+        </div>
+        <div class="nav-menu-btn">
+            <i class="bx bx-menu" onclick="toggleMenu()"></i>
+        </div>
+    </nav>
+
+    <!----- Form box ---->    
+    <div class="form-box">
+        <!------------------- Login Form -------------------------->
+        <form class="login-container" id="login" method="POST" action="{% url 'index' %}">
+            {% csrf_token %}
+            <header>Login</header>
+            <div class="input-box">
+                <label for="username">
+                    <i class="bx bx-user"></i> Username or Email
+                </label>
+                <input type="text" id="username" name="username" class="input-field" placeholder="Enter your username" required>
+                
+            </div>
+            <div class="input-box">
+                <label for="password">
+                <i class="bx bx-lock-alt"></i>  Password
+                </label>
+                <input type="password" id="password" name="password" class="input-field" placeholder="Enter your password" required>
+                
+            </div>
+            <div class="input-box">
+                <input type="submit" class="submit" value="Sign In">
+            </div>
+            <div class="two-col">
+                <div class="one">
+                    <input type="checkbox" id="login-check">
+                    <label for="login-check">Remember Me</label>
+                </div>
+                <div class="two">
+                    <a href="#">Forgot password?</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="{% static 'js/index.js' %}" defer></script>
+
+</body>
+</html>

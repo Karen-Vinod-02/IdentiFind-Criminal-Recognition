@@ -1,0 +1,68 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore migrations pyc files 
+**/migrations/*.pyc
+
+# Ignore local settings and environment files
+.env
+*.env
+.env.*
+
+# Ignore virtual environment folders
+venv/
+env/
+.venv/
+.env/
+
+# Ignore database files
+*.sqlite3
+*.sqlite
+
+# Ignore collected static files 
+/static/
+static/admin/*
+
+# Ignore IDE/editor folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore python testing cache
+.pytest_cache/
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+
+# Ignore Jupyter notebook checkpoints 
+.ipynb_checkpoints/
+
+# Ignore pyenv local python version file
+.python-version
+
+# Ignore pipenv files
+Pipfile.lock
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore embeddings
+*.npy
+
+
+

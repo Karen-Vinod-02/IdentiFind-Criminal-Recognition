@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: url("/static/images/1.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    min-height: 100vh;
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    padding: 15px; /* Reduced body padding */
+    color: white;
+    text-align: center;
+    position: relative; 
+}
+
+h1 {
+    font-size: 32px; /* Slightly larger header */
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    padding: 20px 0; /* Reduced header padding */
+    width: 90%;
+    max-width: 700px; /* Reduced max-width */
+    background: rgba(255, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    border-bottom: 2px solid white; /* Thinner border */
+    margin-bottom: 25px; /* Reduced margin */
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 95%; /* Slightly wider wrapper */
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.match-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 25px; /* Reduced container padding */
+    border-radius: 15px; /* Smaller border radius */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); /* Reduced shadow */
+    -webkit-backdrop-filter: blur(8px); /* Adjusted blur */
+    backdrop-filter: blur(8px); /* Adjusted blur */
+    width: 100%;
+}
+
+.match-container h2 {
+    font-size: 26px; /* Slightly larger name */
+    font-weight: 700;
+    margin-bottom: 18px; /* Slightly increased margin */
+    color: gold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtler shadow */
+}
+
+.image-container {
+    display: flex;
+    gap: 35px; /* Slightly increased gap */
+    margin-bottom: 28px; /* Slightly increased margin */
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.captured-image-wrapper,
+.mugshot-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.captured-image,
+.mugshot {
+    width: 200px; /* Slightly increased image size */
+    height: 200px; /* Slightly increased image size */
+    object-fit: cover;
+    border-radius: 10px; /* Smaller border radius */
+    border: 3px solid white; /* Thinner border */
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5); /* Reduced shadow */
+    margin-top: 10px; /* Reduced margin */
+}
+
+.captured-image-wrapper h3,
+.mugshot-wrapper h3 {
+    font-size: 20px; /* Slightly increased font size */
+    font-weight: 600;
+    margin-bottom: 10px; /* Slightly increased margin */
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); /* Subtler shadow */
+}
+
+.details {
+    width: 90%; /* Wider details section */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px; /* Slightly increased padding */
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px; /* Smaller border radius */
+    margin-top: 25px; /* Reduced margin */
+}
+
+.details p {
+    font-size: 20px; 
+    font-weight: 500;
+    color: white;
+    margin-bottom: 12px; 
+    text-align: center;
+}
+
+.details p strong {
+    font-weight: 700;
+    color: rgba(255, 0, 0, 0.8);
+}
+
+/* Logout Button CSS */
+.logout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    z-index: 10; /* Ensure it's above other elements if needed */
+}
+
+.logout-button:hover {
+    background-color: #c9302c;
+}
+
+/* Ensure no scrolling on typical desktops */
+@media (max-height: 768px) {
+    h1 {
+        font-size: 28px;
+        padding: 18px 0;
+        margin-bottom: 22px;
+    }
+
+    .match-container {
+        padding: 22px;
+    }
+
+    .image-container {
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .captured-image,
+    .mugshot {
+        width: 170px;
+        height: 170px;
+    }
+
+    .captured-image-wrapper h3,
+    .mugshot-wrapper h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .details {
+        padding: 20px;
+        margin-top: 22px;
+    }
+
+    .details p {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .logout-button {
+        top: 15px;
+        right: 15px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}

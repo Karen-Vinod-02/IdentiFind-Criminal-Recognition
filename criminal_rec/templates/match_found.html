@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Match Found - Entry Denied</title>
+    <link rel="stylesheet" href="{% static 'css/match_found.css' %}">
+    <style>
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .logout-button:hover {
+            background-color: #c9302c;
+        }
+
+        /* New confidence badge style */
+        .confidence {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: 18px;
+            color: #fff;
+            background-color: #d9534f;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <a href="/logout/" class="logout-button">Logout</a>
+    <h1>Match Found! Entry Denied</h1>
+
+    <div class="wrapper">
+        <div class="match-container">
+            <h2>{{ name }}</h2>
+            <div class="image-container">
+                {% if captured_image_url %}
+                <div class="captured-image-wrapper">
+                    <h3>Captured Image</h3>
+                    <img src="{{ captured_image_url }}" alt="Captured Image" class="captured-image">
+                </div>
+                {% endif %}
+                {% if image_url %}
+                <div class="mugshot-wrapper">
+                    <h3>Matched Mugshot</h3>
+                    <img src="{{ image_url }}" alt="Matched Mugshot" class="mugshot">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="details">
+                <p><strong>Description:</strong> {{ description }}</p>
+                <p><strong>Identifying Features:</strong> {{ scars_or_marks }}</p>
+                <p><strong>Parole End Date:</strong> {{ parole_status }}</p>
+                <p><strong>Parent Institution:</strong> {{ parent_institution }}</p>
+                {% if confidence %}  
+                <div class="confidence">Confidence Score: {{ confidence }}%</div>
+                {% endif %} 
+            </div>
+        </div>
+    </div>
+</body>
+</html>

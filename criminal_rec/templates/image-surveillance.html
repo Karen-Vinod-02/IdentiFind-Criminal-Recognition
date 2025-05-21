@@ -1,0 +1,214 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Image Surveillance - IdentiFind</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+      #result-container {
+        margin-top: 20px;
+        display: none;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+      #result-container h3 {
+        font-size: 1.2em;
+        margin-bottom: 5px;
+      }
+      #result-container p {
+        margin-bottom: 5px;
+      }
+    </style>
+</head>
+<body>
+
+    <h1>Image Surveillance</h1>
+
+    <div class="wrapper">
+        <h2>Live Camera Feed</h2>
+
+        <div class="camera-container" style="position:relative;">
+            <video id="camera-feed" autoplay muted playsinline style="width:100%; height:auto;"></video>
+            <canvas id="face-overlay" style="position:absolute; top:0; left:0;"></canvas>
+        </div>
+
+        <button class="capture-btn" onclick="captureImage()">Capture Image</button>
+
+        <div id="result-container">
+            <h3>Recognition Result</h3>
+            <p><strong>Status:</strong> <span id="recognition-status">Waiting for capture...</span></p>
+            <p><strong>Match:</strong> <span id="match-status"></span></p>
+            <p><strong>Criminal Name:</strong> <span id="criminal-name"></span></p>
+            <p><strong>Confidence Score:</strong> <span id="confidence-score"></span></p>
+        </div>
+    </div>
+
+    <script>
+        let video = document.getElementById("camera-feed");
+        let canvas = document.getElementById("face-overlay");
+        let ctx = canvas.getContext("2d");
+        let resultContainer = document.getElementById("result-container");
+        let recognitionStatus = document.getElementById("recognition-status");
+        let matchStatus = document.getElementById("match-status");
+        let criminalName = document.getElementById("criminal-name");
+        let confidenceScore = document.getElementById("confidence-score");
+        let imageName = null;
+        let recognitionInterval;
+
+
+        async function startCamera() {
+            try {
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri('/static/model/')
+                ]);
+
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+
+                video.onloadedmetadata = () => {
+                    video.play();
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    detectFaces();
+                };
+            } catch (error) {
+                console.error("Error accessing camera or loading model:", error);
+            }
+        }
+
+        async function detectFaces() {
+            const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
+            const detections = await faceapi.detectAllFaces(video, options);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            detections.forEach(det => {
+                let { x, y, width, height } = det.box;
+                const boxOffsetY = 20;
+                const shrinkHeight = 30;
+                y = Math.max(0, y - boxOffsetY);
+                height = Math.max(0, height - shrinkHeight);
+                ctx.strokeStyle = 'lime';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, width, height);
+                ctx.fillStyle = 'lime';
+                ctx.font = '16px Arial';
+                ctx.fillText("Face detected", x + 4, y - 8);
+            });
+
+            requestAnimationFrame(detectFaces);
+        }
+
+        function captureImage() {
+            let snapshotCanvas = document.createElement("canvas");
+            snapshotCanvas.width = video.videoWidth;
+            snapshotCanvas.height = video.videoHeight;
+            let snapCtx = snapshotCanvas.getContext("2d");
+            snapCtx.drawImage(video, 0, 0);
+            let imageData = snapshotCanvas.toDataURL("image/png");
+
+            resetResultUI();
+            resultContainer.style.display = "block";
+            recognitionStatus.textContent = "Processing...";
+            sendImageToServer(imageData);
+        }
+
+        function sendImageToServer(imageData) {
+            fetch('/capture/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server Response:', data);
+                imageName = data.image_name;
+                if (imageName) {
+                    startRecognitionCheck(imageName);
+                } else {  //for debugging
+                    recognitionStatus.textContent = "Error";
+                    matchStatus.textContent = "Error";
+                    criminalName.textContent = "Error: Image name not received."; 
+                    confidenceScore.textContent = "N/A";
+                }
+            })
+            .catch(error => {
+                console.error('Error sending image:', error);
+                recognitionStatus.textContent = "Error";
+                matchStatus.textContent = "Error";
+                criminalName.textContent = "Error sending image to server."; 
+                confidenceScore.textContent = "N/A";
+            });
+        }
+
+        function startRecognitionCheck(imgName) {
+            recognitionInterval = setInterval(function () {
+                checkRecognitionResult(imgName);
+            }, 1000); // Poll every 1 second
+        }
+
+        function checkRecognitionResult(imgName) {
+            fetch(`/check_result/?image_name=${imgName}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Checking Result:", data);
+                    if (data.status === "match") {
+                        clearInterval(recognitionInterval);
+                        window.location.href = data.redirect_url;
+                    } else if (data.status === "no match") {
+                        clearInterval(recognitionInterval);
+                        recognitionStatus.textContent = "Completed";
+                        matchStatus.textContent = "✅ No Match Found! Entry allowed ";
+                        criminalName.textContent = "N/A";
+                        confidenceScore.textContent = "N/A";
+                    } else if (data.status === "processing") {
+                        recognitionStatus.textContent = "Processing...";
+                    } else if (data.status === "error") {
+                        clearInterval(recognitionInterval);
+                        recognitionStatus.textContent = "Error";
+                        matchStatus.textContent = "Error";
+                        criminalName.textContent = data.error || "An error occurred during recognition.";
+                        confidenceScore.textContent = "N/A";
+                    } else {
+                        recognitionStatus.textContent = "Waiting for result...";
+                        matchStatus.textContent = "Waiting for result...";
+                        criminalName.textContent = "N/A";
+                        confidenceScore.textContent = "N/A";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error checking result:", error);
+                    clearInterval(recognitionInterval);
+                    recognitionStatus.textContent = "Error";
+                    matchStatus.textContent = "Error";
+                    criminalName.textContent = "Error checking for recognition result.";
+                    confidenceScore.textContent = "N/A";
+                });
+        }
+
+        function resetResultUI() {
+            recognitionStatus.textContent = "Processing...";
+            matchStatus.textContent = "";
+            criminalName.textContent = "";
+            confidenceScore.textContent = "";
+        }
+
+        function getCSRFToken() {
+            return document.cookie.split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+        }
+
+        window.onload = startCamera;
+    </script>
+</body>
+</html>
